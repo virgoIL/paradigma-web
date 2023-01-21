@@ -3,6 +3,7 @@
 import {ImageInput} from "@/common/utils/components/ImageInput";
 import {useState} from "react";
 import {GeneratedImageGrid} from "@/features/generator/components/GeneratedImageGrid";
+import axios from "axios";
 
 export function GenerationSection() {
 
@@ -23,22 +24,18 @@ export function GenerationSection() {
         setLoading(true);
         const formData = new FormData();
         formData.append('image', file!);
-        fetch('/api/generate', {
-            method: 'POST',
-            body: formData,
-        }).then((response) => {
-            return response.json();
-        }).then((data) => {
-            // handle response
-            // images: ["s3://bucket/1.png", "s3://bucket/2.png"]
-            console.log(data);
+        axios.post('/api/generate', formData)
+            .then((data) => {
+                // handle response
+                // images: ["s3://bucket/1.png", "s3://bucket/2.png"]
+                console.log(data);
 
-            // update generated images
-            const sameImageUrl: string = imageUrl!;
-            setGenerated([sameImageUrl, sameImageUrl, sameImageUrl, sameImageUrl]);
+                // update generated images
+                const sameImageUrl: string = imageUrl!;
+                setGenerated([sameImageUrl, sameImageUrl, sameImageUrl, sameImageUrl]);
 
-            setLoading(false);
-        });
+                setLoading(false);
+            });
     }
 
     return (
@@ -52,7 +49,8 @@ export function GenerationSection() {
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                     </div> :
                     <div className="md:max-w-3xl md:mx-auto flex flex-col justify-center items-center">
-                        {imageUrl ? <img src={imageUrl} alt="file" className="rounded"/> : <ImageInput onChange={handleChange}/>}
+                        {imageUrl ? <img src={imageUrl} alt="file" className="rounded"/> :
+                            <ImageInput onChange={handleChange}/>}
                         {
                             generated ?
                                 <div className="mt-2">
